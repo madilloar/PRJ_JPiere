@@ -1,0 +1,45 @@
+FROM openjdk:11-jdk
+
+ENV IDEMPIERE_VERSION 8.2
+ENV IDEMPIERE_HOME /opt/idempiere
+ENV IDEMPIERE_PLUGINS_HOME $IDEMPIERE_HOME/plugins
+ENV IDEMPIERE_LOGS_HOME $IDEMPIERE_HOME/log
+ENV IDEMPIERE_BUILD https://osdn.net/projects/jpiere/downloads/74175/JPiereServer82.Linux.x86_64.zip
+ENV IDEMPIERE_DMP https://osdn.net/projects/jpiere/downloads/74175/ExpDat.jar
+
+WORKDIR $IDEMPIERE_HOME
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends vim postgresql-client file dos2unix locales && \
+    rm -rf /var/lib/apt/lists/*
+
+# ExpDat.jar:md5sum:b1dd96ad8ac43a4b08d8de367d854711
+# jpiere:md5sum:629e37932d665827d3fa12a2fe63070b
+RUN curl -L $IDEMPIERE_BUILD -o /tmp/jpiere-server.zip && \
+    echo "jpiere Hash: $(md5sum /tmp/jpiere-server.zip)" > $IDEMPIERE_HOME/MD5SUMS && \
+    echo "jpiere Date: $(date)" >> $IDEMPIERE_HOME/MD5SUMS && \
+    curl -L $IDEMPIERE_DMP -o /tmp/ExpDat.jar && \
+    echo "ExpDat Hash: $(md5sum /tmp/ExpDat.jar)" >> $IDEMPIERE_HOME/MD5SUMS && \
+    echo "ExpDat Date: $(date)" >> $IDEMPIERE_HOME/MD5SUMS && \
+    cat $IDEMPIERE_HOME/MD5SUMS
+
+RUN unzip -q -o /tmp/jpiere-server.zip -d /tmp && \
+    mv /tmp/jpiere-server /tmp/idempiere && \
+    cp -rp /tmp/idempiere /opt && \
+    rm -rf /tmp/idempiere && \
+    rm -rf /tmp/jpiere-server.zip && \
+    find . -type f -name '*.sh' | xargs file | grep CRLF | awk -F: '{print $1}' | xargs dos2unix && \
+    find . -type f -name '*.sh' | xargs chmod u+x && \
+    chmod u+x idempiere && \
+    jar xvf /tmp/ExpDat.jar && \
+    mv ExpDat.dmp Adempiere_pg.dmp && \
+    jar cvMf Adempiere_pg.jar Adempiere_pg.dmp && \
+    mv Adempiere_pg.jar $IDEMPIERE_HOME/data/seed && \
+    rm -rf Adempiere_pg.dmp && \
+    rm -rf /tmp/ExpDat.jar && \
+    ln -s $IDEMPIERE_HOME/idempiere-server.sh /usr/bin/idempiere
+
+COPY docker-entrypoint.sh $IDEMPIERE_HOME
+
+ENTRYPOINT ["./docker-entrypoint.sh"]
+CMD ["idempiere"]

@@ -1,0 +1,30 @@
+version: '3.7'
+
+services:
+  idempiere:
+    image: jpiere:8.21
+    volumes:
+      - idempiere_config:/home/prj/jpiere/configuration
+      - idempiere_plugins:/home/prj/jpiere/plugins
+    environment:
+      - TZ=Asia/Tokyo
+    ports:
+      - 8080:8080
+      - 8443:8443
+      - 12612:12612
+
+  postgres:
+    image: postgres:12
+    volumes:
+      - idempiere_data:/home/prj/jpiere/postgres-data
+    environment:
+      - TZ=Asia/Tokyo
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - 5432:5432
+
+volumes:
+  idempiere_data:
+  idempiere_plugins:
+  idempiere_config:
+
