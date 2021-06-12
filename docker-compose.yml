@@ -4,8 +4,9 @@ services:
   idempiere:
     image: jpiere:8.21
     volumes:
-      - idempiere_config:/home/prj/jpiere/configuration
-      - idempiere_plugins:/home/prj/jpiere/plugins
+      - idempiere_config:/opt/idempiere/configuration
+      - idempiere_plugins:/opt/idempiere/plugins
+      - idempiere_log:/opt/idempiere/log
     environment:
       - TZ=Asia/Tokyo
     ports:
@@ -16,15 +17,16 @@ services:
   postgres:
     image: postgres:12
     volumes:
-      - idempiere_data:/home/prj/jpiere/postgres-data
+      - postgres_data:/var/lib/postgresql/data
+      - postgres_log:/var/log
     environment:
       - TZ=Asia/Tokyo
       - POSTGRES_PASSWORD=postgres
     ports:
       - 5432:5432
-
 volumes:
-  idempiere_data:
   idempiere_plugins:
   idempiere_config:
-
+  idempiere_log:
+  postgres_data:
+  postgres_log:
