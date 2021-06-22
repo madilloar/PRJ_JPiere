@@ -4,8 +4,8 @@ ENV IDEMPIERE_VERSION 8.2
 ENV IDEMPIERE_HOME /opt/idempiere
 ENV IDEMPIERE_PLUGINS_HOME $IDEMPIERE_HOME/plugins
 ENV IDEMPIERE_LOGS_HOME $IDEMPIERE_HOME/log
-ENV IDEMPIERE_BUILD https://osdn.net/projects/jpiere/downloads/74175/JPiereServer82.Linux.x86_64.zip
-ENV IDEMPIERE_DMP https://osdn.net/projects/jpiere/downloads/74175/ExpDat.jar
+ENV IDEMPIERE_BUILD https://osdn.net/projects/jpiere/downloads/75280/JPiereServer82.Linux.x86_64.zip
+ENV IDEMPIERE_DMP https://osdn.net/projects/jpiere/downloads/75280/ExpDat.jar
 
 WORKDIR $IDEMPIERE_HOME
 
@@ -13,8 +13,8 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends vim postgresql-client file dos2unix locales && \
     rm -rf /var/lib/apt/lists/*
 
-# ExpDat.jar:md5sum:b1dd96ad8ac43a4b08d8de367d854711
-# jpiere:md5sum:629e37932d665827d3fa12a2fe63070b
+# ExpDat.jar:md5sum:39e903b6c3c8c5c7c97810c5b95b5002
+# jpiere:md5sum:3ea8fa32805da6229d96fe6f8ea4ef80
 RUN curl -L $IDEMPIERE_BUILD -o /tmp/jpiere-server.zip && \
     echo "jpiere Hash: $(md5sum /tmp/jpiere-server.zip)" > $IDEMPIERE_HOME/MD5SUMS && \
     echo "jpiere Date: $(date)" >> $IDEMPIERE_HOME/MD5SUMS && \
