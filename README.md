@@ -179,6 +179,34 @@ docker run -it --name jpiere -p 8080:8080 --net jpiere_net \
 docker network inspect jpiere_net
 ```
 
+## docker buildで次のエラーが起きたとき
+
+```
+Err:1 http://deb.debian.org/debian buster InRelease
+  Temporary failure resolving 'deb.debian.org'
+```
+
+コンテナホスト側のDNSの問題。``/etc/resolv.conf``に次を記入。
+
+```
+nameserver 8.8.8.8
+nameserver 8.8.4.4
+```
+
+wsl2の場合は、``/etc/wsl.conf``に次を記入し、
+
+```
+[network]
+generateResolvConf = false
+```
+
+``/etc.resolv.conf``に次を記入。
+
+```
+nameserver 8.8.8.8
+nameserver 8.8.4.4
+```
+
 # 参考URL
 
 [https://hub.docker.com/r/idempiereofficial/idempiere](https://hub.docker.com/r/idempiereofficial/idempiere)
